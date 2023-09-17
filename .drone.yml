@@ -1,0 +1,30 @@
+type: docker
+kind: pipeline
+name: default
+
+steps:
+  - name: build for release
+    when:
+      event:
+        - tag
+    image: ghcr.io/cirruslabs/flutter:stable
+    commands:
+      - flutter build apk
+
+  - name: release
+    image: plugins/gitea-release
+    when:
+      event:
+        - tag
+    settings:
+      api_key: 1ff8cbd053fe5c545fdc8f353c26d1ad48d3fc4c
+      base_url: https://gitea.int.envadel.com
+      files:
+        - build/app/outputs/flutter-apk/app-release.apk
+      checksum:
+        - md5
+        - sha1
+        - sha256
+        - sha512
+        - adler32
+        - crc32
